@@ -6,7 +6,7 @@
 #    By: sbelomet <sbelomet@42lausanne.ch>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/02 13:28:59 by sbelomet          #+#    #+#              #
-#    Updated: 2024/10/02 15:19:13 by sbelomet         ###   ########.fr        #
+#    Updated: 2024/10/03 13:00:25 by sbelomet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,7 +61,7 @@ show:
 	@echo "$(GREEN)List of all containers:$(DEF_COLOR)"
 	@docker containers ls -a
 	@echo "$(GREEN)List of all images:$(DEF_COLOR)"
-	@docker image ls
+	@docker images ls
 	@echo "$(GREEN)List of all volumes:$(DEF_COLOR)"
 	@docker volume ls
 	@echo "$(GREEN)List of all networks:$(DEF_COLOR)"
@@ -73,15 +73,15 @@ remove_containers:
 
 remove_images:
 	@echo "$(RED)Removing all images...$(DEF_COLOR)"
-	@docker rm -f $(docker image ls -aq)
+	@docker rmi -f $(docker images -aq)
 
 remove_volumes:
 	@echo "$(RED)Removing all volumes...$(DEF_COLOR)"
-	@docker rm -f $(docker volume ls -q)
+	@docker volume rm -f $(docker volume ls -q)
 
 remove_networks:
 	@echo "$(RED)Removing all networks...$(DEF_COLOR)"
-	@docker rm -f $(docker network ls -q)
+	@docker network rm -f $(docker network ls -q)
 
 fclean: remove_containers remove_images remove_volumes remove_networks
 
