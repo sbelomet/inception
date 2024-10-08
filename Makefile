@@ -6,7 +6,7 @@
 #    By: sbelomet <sbelomet@42lausanne.ch>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/02 13:28:59 by sbelomet          #+#    #+#              #
-#    Updated: 2024/10/04 12:24:53 by sbelomet         ###   ########.fr        #
+#    Updated: 2024/10/08 11:11:55 by sbelomet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -82,6 +82,10 @@ fclean: remove_containers remove_images remove_volumes remove_networks
 	@rm -rf /home/$(USER)/data/wordpress
 	@rm -rf /home/$(USER)/data/mariadb
 
+prune:
+	@echo "$(RED)Pruning all...$(DEF_COLOR)"
+	@docker system prune -a
+
 re: fclean all
 
-.PHONY: all build up down stop show remove_containers remove_images remove_volumes remove_networks fclean re
+.PHONY: all build up down stop show remove_containers remove_images remove_volumes remove_networks fclean prune re

@@ -25,7 +25,7 @@ services:
       dockerfile: Dockerfile
     container_name: nginx
     image: nginx:1337
-    restart: on_failure
+    restart: on-failure
     networks:
       - $NETWORK_NAME
     expose:
@@ -37,12 +37,16 @@ services:
     env_file:
       - .env
     depends_on:
-      - wordpress
+      wordpress:
+        condition: service_started
   
   mariadb:
+    build:
+      context: requirements/mariadb
+      dockerfile: Dockerfile
     container_name: mariadb
     image: mariadb:1337
-    restart: on_failure
+    restart: on-failure
     networks:
       - $NETWORK_NAME
     expose:
@@ -53,12 +57,17 @@ services:
       - mariadb:/var/lib/mysql
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
   
   wordpress:
     build: requirements/wordpress
     container_name: wordpress
     image: wordpress:1337
-    restart: on_failure
+    restart: on-failure
     networks:
       - $NETWORK_NAME
     expose:
@@ -70,4 +79,6 @@ services:
     env_file:
       - .env
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
+        restart: false
