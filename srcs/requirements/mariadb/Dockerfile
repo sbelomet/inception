@@ -9,8 +9,10 @@ RUN apt-get install -y mariadb-server mysql-common
 
 RUN rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /var/run/mysqld && chown -R mysql:mysql /var/run/mysqld && \
-	mkdir -p /var/lib/mysql && chown -R mysql:mysql /var/lib/mysql
+RUN mkdir -p /run/mysqld /var/lib/mysql && \
+	chown -R mysql:mysql /run/mysqld /var/lib/mysql && \
+	chmod 777 /run/mysqld
+RUN	mysql_install_db --user=mysql --datadir=/var/lib/mysql --auth-root-authentication-method=normal --skip-test-db
 
 EXPOSE 3306
 

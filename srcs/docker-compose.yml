@@ -10,7 +10,7 @@ volumes:
       device: /home/sbelomet/data/mariadb
       o: bind
     name: mariadb
-    
+
   wordpress:
     driver_opts:
       type: none
@@ -37,9 +37,8 @@ services:
     env_file:
       - .env
     depends_on:
-      wordpress:
-        condition: service_started
-  
+      - wordpress
+
   mariadb:
     build:
       context: requirements/mariadb

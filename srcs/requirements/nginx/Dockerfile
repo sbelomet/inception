@@ -11,4 +11,5 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 	-keyout /etc/ssl/private/nginx_inception.key \
 	-out /etc/ssl/certs/nginx_inception.crt -subj "/C=CH/ST=Vaud/L=Lausanne/O=42/OU=42/CN=sbelomet.42.fr"
 
+CMD ["echo", "Nginx container is running..."]
 CMD ["nginx", "-g", "daemon off;"]

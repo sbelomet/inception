@@ -1,20 +1,32 @@
-#!/bin/bash
+#!/bin/sh
 
-apt list --installed | grep mysql
+if [ ! -d "/var/lib/mysql/${DB_NAME}" ]; then
+	/usr/bin/mysqld_safe --datadir=/var/lib/mysql &
 
-echo "=> Starting MariaDB server"
-service mysql start
+	until mysqladmin ping 2> /dev/null; do
+		sleep 2
+	done
 
-echo "=> Creating MariaDB database and user"
-mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$ROOT_PASSWORD';"
-mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'root' IDENTIFIED BY '$ROOT_PASSWORD';"
-mysql -u root -e "FLUSH PRIVILEGES;"
-mysql -u root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
-mysql -u root -e "CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_USER_PASSWORD';"
-mysql -u root -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%' IDENTIFIED BY '$DB_USER_PASSWORD';"
-mysql -u root -e "FLUSH PRIVILEGES;"
-mysql -u root -e "USE $DB_NAME;"
+	mysql -u root <<EOF
+		CREATE DATABASE IF NOT EXISTS ${DB_NAME};
+		
+		ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASSWORD}';
+		
+		DELETE FROM mysql.user WHERE user='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+		DELETE FROM mysql.user WHERE user='';
+		
+		CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_USER_PASSWORD}';
+		GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';
+		
+		FLUSH PRIVILEGES;
+EOF
 
-service mysql stop
+	if [ $? -ne 0 ]; then
+		echo "Error: MySQL commands failed." >&2
+		exit 1
+	fi
+
+	killall mysqld 2> /dev/null
+fi
 
 exec "$@"
