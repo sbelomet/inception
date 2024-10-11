@@ -28,8 +28,6 @@ done
 echo "=> Checking if WordPress is already installed"
 if [ ! -f /var/www/wordpress/wp-config.php ]; then
 
-	
-
 	chown -R www-data:www-data /var/www/wordpress
 	rm -rf /var/www/wordpress/*
 	echo "=> Installing WordPress"

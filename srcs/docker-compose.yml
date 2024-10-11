@@ -50,8 +50,6 @@ services:
       - $NETWORK_NAME
     expose:
       - "3306"
-    ports:
-      - "3306:3306"
     volumes:
       - mariadb:/var/lib/mysql
     env_file:
@@ -71,8 +69,6 @@ services:
       - $NETWORK_NAME
     expose:
       - "9000"
-    ports:
-      - "9000:9000"
     volumes:
       - wordpress:/var/www/wordpress
     env_file:

@@ -6,7 +6,7 @@
 #    By: sbelomet <sbelomet@42lausanne.ch>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/02 13:28:59 by sbelomet          #+#    #+#              #
-#    Updated: 2024/10/08 11:11:55 by sbelomet         ###   ########.fr        #
+#    Updated: 2024/10/11 11:58:55 by sbelomet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,8 +25,8 @@ all: build up
 
 make_dirs:
 	@echo "$(YELLOW)Creating directories...$(DEF_COLOR)"
-	@mkdir -p /home/$(USER)/data/wordpress
-	@mkdir -p /home/$(USER)/data/mariadb
+	@mkdir -p $(HOME)/data/wordpress
+	@mkdir -p $(HOME)/data/mariadb
 
 build: make_dirs
 	@echo "$(YELLOW)Building containers...$(DEF_COLOR)"
@@ -34,15 +34,19 @@ build: make_dirs
 
 up:
 	@echo "$(YELLOW)Starting containers...$(DEF_COLOR)"
-	@docker-compose -f $(DOCK_COMP) up
+	@docker-compose -f $(DOCK_COMP) up -d
 
 down:
-	@echo "$(YELLOW)Deleting containers...$(DEF_COLOR)"
+	@echo "$(YELLOW)Stopping and deleting containers...$(DEF_COLOR)"
 	@docker-compose -f $(DOCK_COMP) down
 
 stop:
 	@echo "$(YELLOW)Stopping containers...$(DEF_COLOR)"
 	@docker-compose -f $(DOCK_COMP) stop
+
+start:
+	@echo "$(YELLOW)Starting containers...$(DEF_COLOR)"
+	@docker-compose -f $(DOCK_COMP) start
 
 show:
 	@echo "$(GREEN)List of all containers:$(DEF_COLOR)"
@@ -56,36 +60,32 @@ show:
 
 remove_containers:
 	@echo "$(RED)Removing all containers...$(DEF_COLOR)"
-	@if [ $(docker ps -aq) ]; then \
-		docker rm -f $(docker ps -aq); \
+	@if [ $(shell docker ps -aq) ]; then \
+		docker container rm -fv $(shell docker ps -aq); \
 	fi
 
 remove_images:
 	@echo "$(RED)Removing all images...$(DEF_COLOR)"
-	@if [ $(docker images -q) ]; then \
-		docker rmi -f $(docker images -q); \
+	@if [ $(shell docker image ls -q) ]; then \
+		docker image rm -f $(shell docker image ls -q); \
 	fi
 
 remove_volumes:
 	@echo "$(RED)Removing all volumes...$(DEF_COLOR)"
-	@if [ $(docker volume ls -q) ]; then \
-		docker volume rm -f $(docker volume ls -q); \
+	@rm -rf $(HOME)/data/wordpress
+	@rm -rf $(HOME)/data/mariadb
+	@if [ $(shell docker volume ls -q) ]; then \
+		docker volume rm -f $(shell docker volume ls -q); \
 	fi
 
-remove_networks:
-	@echo "$(RED)Removing all networks...$(DEF_COLOR)"
-	@if [ $(docker network ls -q) ]; then \
-		docker network rm -f $(docker network ls -q); \
-	fi
+clean: remove_containers remove_images remove_volumes
 
-fclean: remove_containers remove_images remove_volumes remove_networks
-	@rm -rf /home/$(USER)/data/wordpress
-	@rm -rf /home/$(USER)/data/mariadb
-
-prune:
-	@echo "$(RED)Pruning all...$(DEF_COLOR)"
+fclean: clean
+	@echo "$(RED)Removing all...$(DEF_COLOR)"
 	@docker system prune -a
+	@rm -rf $(HOME)/data/wordpress
+	@rm -rf $(HOME)/data/mariadb
 
 re: fclean all
 
-.PHONY: all build up down stop show remove_containers remove_images remove_volumes remove_networks fclean prune re
+.PHONY: all build up down stop show remove_containers remove_images remove_volumes fclean prune re
