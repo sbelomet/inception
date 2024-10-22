@@ -7,7 +7,8 @@ RUN rm -rf /var/lib/apt/lists/*
 
 EXPOSE 443
 
-COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
+#COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
+COPY ./conf/default.conf /etc/nginx/sites-available/default
 COPY ./tools/entrypoint_nginx.sh /usr/local/bin/entrypoint.sh
 
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \

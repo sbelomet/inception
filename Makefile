@@ -6,7 +6,7 @@
 #    By: sbelomet <sbelomet@42lausanne.ch>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/02 13:28:59 by sbelomet          #+#    #+#              #
-#    Updated: 2024/10/11 11:58:55 by sbelomet         ###   ########.fr        #
+#    Updated: 2024/10/22 13:26:20 by sbelomet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,8 +25,8 @@ all: build up
 
 make_dirs:
 	@echo "$(YELLOW)Creating directories...$(DEF_COLOR)"
-	@mkdir -p $(HOME)/data/wordpress
-	@mkdir -p $(HOME)/data/mariadb
+	mkdir -p /home/sbelomet/data/wordpress
+	mkdir -p /home/sbelomet/data/mariadb
 
 build: make_dirs
 	@echo "$(YELLOW)Building containers...$(DEF_COLOR)"
@@ -66,6 +66,7 @@ remove_containers:
 
 remove_images:
 	@echo "$(RED)Removing all images...$(DEF_COLOR)"
+	docker image ls -q
 	@if [ $(shell docker image ls -q) ]; then \
 		docker image rm -f $(shell docker image ls -q); \
 	fi

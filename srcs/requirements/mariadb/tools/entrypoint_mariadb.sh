@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ ! -d "/var/lib/mysql/${DB_NAME}" ]; then
-	/usr/bin/mysqld_safe --datadir=/var/lib/mysql &
+	/usr/bin/mysqld_safe --datadir=/var/lib/mysql --user=mysql &
 
 	until mysqladmin ping 2> /dev/null; do
 		sleep 2
@@ -20,11 +20,6 @@ if [ ! -d "/var/lib/mysql/${DB_NAME}" ]; then
 		
 		FLUSH PRIVILEGES;
 EOF
-
-	if [ $? -ne 0 ]; then
-		echo "Error: MySQL commands failed." >&2
-		exit 1
-	fi
 
 	killall mysqld 2> /dev/null
 fi

@@ -1,11 +1,7 @@
 FROM debian:bullseye
 
 RUN apt-get update && apt-get -y upgrade
-RUN apt-get purge -y mysql-server mysql-common && \
-	apt-get purge -y mysql-client && \
-	apt-get autoremove -y mysql-server mysql-client mysql-common && \
-	apt-get autoclean -y mysql-seerver mysql-client mysql-common
-RUN apt-get install -y mariadb-server mysql-common
+RUN apt-get install -y mariadb-server
 
 RUN rm -rf /var/lib/apt/lists/*
 

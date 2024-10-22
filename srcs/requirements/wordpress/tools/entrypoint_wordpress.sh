@@ -25,46 +25,34 @@ until mysqladmin --user=${DB_USER} --password=${DB_USER_PASSWORD} --host=mariadb
 	sleep 2
 done
 
-echo "=> Checking if WordPress is already installed"
-if [ ! -f /var/www/wordpress/wp-config.php ]; then
 
-	chown -R www-data:www-data /var/www/wordpress
-	rm -rf /var/www/wordpress/*
-	echo "=> Installing WordPress"
-	wp core download --allow-root --version=6.5 --path='/var/www/wordpress'
+chown -R www-data:www-data /var/www/wordpress
+rm -rf /var/www/wordpress/*
+echo "=> Installing WordPress"
+wp core download --allow-root --version=6.5 --path='/var/www/wordpress'
 
-	cd /var/www/wordpress
+cd /var/www/wordpress
 
-	echo "=> Configuring WordPress"
-	mv wp-config-sample.php wp-config.php
-	sed -i "s/database_name_here/${DB_NAME}/g" wp-config.php
-	sed -i "s/username_here/${DB_USER}/g" wp-config.php
-	sed -i "s/password_here/${DB_USER_PASSWORD}/g" wp-config.php
-	sed -i "s/localhost/${DB_HOST}/g" wp-config.php
-	#wp config create	--allow-root \
-	#					--dbname=$DB_NAME \
-	#					--dbuser=$DB_USER \
-	#					--dbpass=$DB_USER_PASSWORD \
-	#					--dbhost=$DB_HOST \
-	#					--path='/var/www/wordpress'
+echo "=> Configuring WordPress"
+mv wp-config-sample.php wp-config.php
+sed -i "s/database_name_here/${DB_NAME}/g" wp-config.php
+sed -i "s/username_here/${DB_USER}/g" wp-config.php
+sed -i "s/password_here/${DB_USER_PASSWORD}/g" wp-config.php
+sed -i "s/localhost/${DB_HOST}/g" wp-config.php
 
-	wp core install		--url=${WP_URL} \
-						--title=${WP_TITLE} \
-						--admin_user=${WP_ADMIN_USER} \
-						--admin_password=${WP_ADMIN_PASSWORD} \
-						--admin_email=${WP_ADMIN_EMAIL} \
-						--allow-root \
-						--path='/var/www/wordpress'
+wp core install --allow-root \
+					--url=$WP_URL \
+					--title=$WP_TITLE \
+					--admin_user=$WP_ADMIN_USER \
+					--admin_password=$WP_ADMIN_PASSWORD \
+					--admin_email=$WP_ADMIN_EMAIL \
+					--skip-email
 
-	wp user create		${WP_USER} \
-						${WP_USER_EMAIL} \
-						--role=author \
-						--user_pass=${WP_USER_PASSWORD} \
-						--allow-root
-
-fi
-
-#cat /var/www/wordpress/wp-config.php
+wp user create		${WP_USER} \
+					${WP_USER_EMAIL} \
+					--role=author \
+					--user_pass=${WP_USER_PASSWORD} \
+					--allow-root
 
 echo "=> Starting php-fpm"
 exec "$@"
